@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#FDB750">
+    <title>صيصاني - إدارة الصيصان</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00D9FF;
+            --secondary: #00B8D4;
+            --success: #00E676;
+            --danger: #FF5252;
+            --bg-main: #121212;
+            --bg-card: #1E1E1E;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B0B0B0;
+            --shadow: rgba(0, 217, 255, 0.15);
+            --border: #2D2D2D;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 1.5rem 1rem;
+            box-shadow: 0 4px 20px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 3rem;
+        }
+
+        .header-text h1 {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header-text p {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .stats-dashboard {
+            max-width: 600px;
+            margin: -2rem auto 1rem;
+            padding: 0 1rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            padding: 1.2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px var(--shadow);
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-top: 0.3rem;
+        }
+
+        .stat-value {
+            font-size: 0.75rem;
+            color: var(--success);
+            margin-top: 0.3rem;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+
+        .tab {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px var(--shadow);
+            color: var(--text-secondary);
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #00D9FF, #00B8D4);
+            color: #121212;
+        }
+
+        .add-btn {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #FF6B6B, #FF4757);
+            border: none;
+            border-radius: 50%;
+            font-size: 2.5rem;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255, 71, 87, 0.5);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .add-btn:active {
+            transform: translateX(-50%) scale(0.9);
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.5);
+        }
+
+        .chick-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .chick-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.2rem;
+            box-shadow: 0 4px 15px var(--shadow);
+            border-right: 5px solid var(--primary);
+            border: 1px solid var(--border);
+            border-right: 5px solid var(--primary);
+        }
+
+        .chick-header {
+            margin-bottom: 1rem;
+        }
+
+        .chick-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chick-age {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-top: 0.3rem;
+            font-weight: 500;
+        }
+
+        .chick-stage {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        .chick-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin: 1rem 0;
+        }
+
+        .detail-item {
+            background: var(--bg-main);
+            padding: 0.8rem;
+            border-radius: 10px;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.2rem;
+        }
+
+        .detail-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .detail-value.price {
+            color: var(--success);
+        }
+
+        .chick-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .feed-btn {
+            background: linear-gradient(135deg, #00E676, #00C853);
+            color: white;
+        }
+
+        .feed-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .sell-btn {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #121212;
+        }
+
+        .sell-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .death-btn {
+            background: linear-gradient(135deg, #FF5252, #D32F2F);
+            color: white;
+        }
+
+        .death-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, #757575, #424242);
+            color: white;
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.8rem;
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1rem;
+            background: var(--bg-main);
+            color: var(--text-primary);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.2);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00D9FF, #00B8D4);
+            color: #121212;
+            font-weight: 900;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.97);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: #2D2D2D;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:active {
+            transform: scale(0.97);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+
+        .empty-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: linear-gradient(135deg, #00D9FF, #00B8D4);
+            color: #121212;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 217, 255, 0.4);
+            z-index: 1000;
+            font-weight: 700;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            padding: 0.8rem;
+            box-shadow: 0 -4px 20px var(--shadow);
+            z-index: 100;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            min-width: 70px;
+        }
+
+        .nav-item.active {
+            background: rgba(0, 217, 255, 0.15);
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">🐣</div>
+            <div class="header-text">
+                <h1>صيصاني</h1>
+                <p>إدارة بسيطة وسهلة للصيصان</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="stats-dashboard">
+        <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="stat-card" style="grid-column: span 2;">
+                <div class="stat-icon" id="mainIcon">🐣</div>
+                <div class="stat-number" id="totalCount">0</div>
+                <div class="stat-label" id="mainLabel">صيصان</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-number" id="statTotal">0</div>
+                <div class="stat-label">ريال</div>
+                <div class="stat-value" id="statProfit">ربح: 0 ر.س</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-number" id="statDead">0</div>
+                <div class="stat-label">وفيات</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="screen active" id="homeScreen">
+            <div class="tabs">
+                <button class="tab active" onclick="filterChicks('all')">الكل</button>
+                <button class="tab" onclick="filterChicks('chicks')">صيصان</button>
+                <button class="tab" onclick="filterChicks('broilers')">فراريج</button>
+                <button class="tab" onclick="filterChicks('chickens')">دجاج</button>
+            </div>
+
+            <div class="chick-list" id="chicksList"></div>
+
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-icon">🐣</div>
+                <div class="empty-text">لا توجد صيصان بعد</div>
+                <p style="color: var(--text-secondary); margin-top: 0.5rem;">اضغط + لإضافة صيصان جديدة</p>
+            </div>
+        </div>
+    </div>
+
+    <button class="add-btn" onclick="openAddModal()">+</button>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active">
+            <div class="nav-icon">🏠</div>
+            <div class="nav-label">الرئيسية</div>
+        </div>
+        <div class="nav-item" onclick="openAddFeedModal()">
+            <div class="nav-icon">🌾</div>
+            <div class="nav-label">إضافة علف</div>
+        </div>
+        <div class="nav-item" onclick="viewFeeds()">
+            <div class="nav-icon">📋</div>
+            <div class="nav-label">العلف</div>
+        </div>
+        <div class="nav-item" onclick="clearAllData()">
+            <div class="nav-icon">🗑️</div>
+            <div class="nav-label">حذف الكل</div>
+        </div>
+    </nav>
+
+    <!-- Developer Credit -->
+    <div style="position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); text-align: center; color: var(--text-secondary); font-size: 0.75rem; z-index: 1; opacity: 0.7; background: var(--bg-card); padding: 0.3rem 1rem; border-radius: 20px; border: 1px solid var(--border);">
+        تم التصميم بواسطة: <span style="color: var(--primary); font-weight: 700;">وسام الشراري</span> ✨
+    </div>
+
+    <div class="modal" id="addModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🐣 إضافة صيصان جديدة</h2>
+            </div>
+            <form onsubmit="addChicks(event)">
+                <div class="form-group">
+                    <label class="form-label">عدد الصيصان *</label>
+                    <input type="number" class="form-input" id="chickCount" placeholder="مثال: 10" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">اسم المجموعة (اختياري)</label>
+                    <input type="text" class="form-input" id="groupName" placeholder="مثال: صيصان يناير">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">تاريخ الشراء *</label>
+                    <input type="date" class="form-input" id="purchaseDate" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">سعر الصوص الواحد (ريال) *</label>
+                    <input type="number" class="form-input" id="purchasePrice" placeholder="مثال: 1.5 أو 10.5" step="0.5" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">العمر عند الشراء (أيام)</label>
+                    <input type="number" class="form-input" id="ageAtPurchase" placeholder="0" value="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">اسم البائع (اختياري)</label>
+                    <input type="text" class="form-input" id="seller" placeholder="اختياري">
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">إضافة ✓</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addModal')">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="feedModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🍽️ تسجيل الإطعام</h2>
+            </div>
+            <form onsubmit="recordFeeding(event)">
+                <div class="form-group">
+                    <label class="form-label">نوع العلف</label>
+                    <input type="text" class="form-input" id="feedType" placeholder="مثال: علف صيصان" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">الكمية (كيلو)</label>
+                    <input type="number" class="form-input" id="feedQuantity" placeholder="5" step="0.5" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">التكلفة (ريال)</label>
+                    <input type="number" class="form-input" id="feedCost" placeholder="25.5" step="0.5" min="0" required>
+                </div>
+                <input type="hidden" id="feedChickId">
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">تسجيل ✓</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('feedModal')">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Feed Type Modal -->
+    <div class="modal" id="addFeedTypeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🌾 إضافة نوع علف جديد</h2>
+            </div>
+            <form onsubmit="addFeedType(event)">
+                <div class="form-group">
+                    <label class="form-label">اسم العلف *</label>
+                    <input type="text" class="form-input" id="feedTypeName" placeholder="مثال: علف صيصان" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">سعر الكيس (ريال) *</label>
+                    <input type="number" class="form-input" id="feedTypePrice" placeholder="مثال: 50.5" step="0.5" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">وزن الكيس (كيلو)</label>
+                    <input type="number" class="form-input" id="feedTypeWeight" placeholder="مثال: 50" step="0.5" min="0">
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">إضافة ✓</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addFeedTypeModal')">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Feeds Modal -->
+    <div class="modal" id="viewFeedsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📋 أنواع العلف المسجلة</h2>
+            </div>
+            <div id="feedTypesList" style="max-height: 60vh; overflow-y: auto;"></div>
+            <div class="button-group" style="margin-top: 1rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('viewFeedsModal')" style="width: 100%;">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let chicks = [];
+        let feedRecords = [];
+        let feedTypes = []; // أنواع العلف
+        let currentFilter = 'all';
+
+        window.onload = function() {
+            loadData();
+            renderAll();
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('purchaseDate').value = today;
+        };
+
+        function loadData() {
+            const savedChicks = localStorage.getItem('saysani_chicks');
+            const savedFeeds = localStorage.getItem('saysani_feeds');
+            const savedFeedTypes = localStorage.getItem('saysani_feedTypes');
+            if (savedChicks) chicks = JSON.parse(savedChicks);
+            if (savedFeeds) feedRecords = JSON.parse(savedFeeds);
+            if (savedFeedTypes) feedTypes = JSON.parse(savedFeedTypes);
+        }
+
+        function saveData() {
+            localStorage.setItem('saysani_chicks', JSON.stringify(chicks));
+            localStorage.setItem('saysani_feeds', JSON.stringify(feedRecords));
+            localStorage.setItem('saysani_feedTypes', JSON.stringify(feedTypes));
+        }
+
+        function calculateAge(purchaseDate, ageAtPurchase) {
+            const purchase = new Date(purchaseDate);
+            const now = new Date();
+            const daysSincePurchase = Math.floor((now - purchase) / (1000 * 60 * 60 * 24));
+            return daysSincePurchase + parseInt(ageAtPurchase || 0);
+        }
+
+        function getStage(ageInDays) {
+            if (ageInDays <= 30) {
+                return { name: 'صوص', icon: '🐥', type: 'chicks' };
+            } else if (ageInDays <= 90) {
+                return { name: 'فروج', icon: '🐔', type: 'broilers' };
+            } else {
+                return { name: 'دجاجة', icon: '🐓', type: 'chickens' };
+            }
+        }
+
+        function formatAge(ageInDays) {
+            if (ageInDays < 30) {
+                return ageInDays + ' يوم';
+            } else if (ageInDays < 365) {
+                const months = Math.floor(ageInDays / 30);
+                const days = ageInDays % 30;
+                return days > 0 ? months + ' شهر و ' + days + ' يوم' : months + ' شهر';
+            } else {
+                const years = Math.floor(ageInDays / 365);
+                const months = Math.floor((ageInDays % 365) / 30);
+                return months > 0 ? years + ' سنة و ' + months + ' شهر' : years + ' سنة';
+            }
+        }
+
+        function calculateCurrentPrice(purchasePrice, purchaseDate, ageAtPurchase) {
+            const ageInDays = calculateAge(purchaseDate, ageAtPurchase);
+            const monthsOld = Math.floor(ageInDays / 30);
+            return parseFloat(purchasePrice) + (monthsOld * 1.5);
+        }
+
+        function addChicks(event) {
+            event.preventDefault();
+            
+            const count = parseInt(document.getElementById('chickCount').value);
+            const groupName = document.getElementById('groupName').value.trim() || 'صوص';
+            const date = document.getElementById('purchaseDate').value;
+            const price = parseFloat(document.getElementById('purchasePrice').value);
+            const age = parseInt(document.getElementById('ageAtPurchase').value) || 0;
+            const seller = document.getElementById('seller').value.trim();
+            
+            if (!count || !date || !price) {
+                showToast('❌ يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+            
+            for (let i = 1; i <= count; i++) {
+                chicks.push({
+                    id: 'chick_' + Date.now() + '_' + i,
+                    name: groupName + ' ' + i,
+                    purchaseDate: date,
+                    purchasePrice: price,
+                    ageAtPurchase: age,
+                    seller: seller || null,
+                    lastFed: null,
+                    isDeleted: false
+                });
+            }
+            
+            saveData();
+            renderAll();
+            closeModal('addModal');
+            showToast('✅ تم إضافة ' + count + ' صوص بنجاح!');
+            
+            document.getElementById('chickCount').value = '';
+            document.getElementById('groupName').value = '';
+            document.getElementById('purchasePrice').value = '';
+            document.getElementById('ageAtPurchase').value = '0';
+            document.getElementById('seller').value = '';
+        }
+
+        function deleteChick(chickId) {
+            if (confirm('هل أنت متأكد من حذف هذا الصوص؟')) {
+                const chick = chicks.find(c => c.id === chickId);
+                if (chick) {
+                    chick.isDeleted = true;
+                    saveData();
+                    renderAll();
+                    showToast('🗑️ تم حذف ' + chick.name);
+                }
+            }
+        }
+
+        // تسجيل موت الصوص
+        function markAsDead(chickId) {
+            if (confirm('هل تأكيد وفاة هذا الصوص؟ 😢')) {
+                const chick = chicks.find(c => c.id === chickId);
+                if (chick) {
+                    chick.isDeleted = true;
+                    chick.deathDate = new Date().toISOString();
+                    chick.deathReason = 'وفاة';
+                    saveData();
+                    renderAll();
+                    showToast('☠️ تم تسجيل وفاة ' + chick.name);
+                }
+            }
+        }
+
+        // تسجيل بيع الصوص
+        function sellChick(chickId) {
+            const chick = chicks.find(c => c.id === chickId);
+            if (!chick) return;
+            
+            const currentPrice = calculateCurrentPrice(chick.purchasePrice, chick.purchaseDate, chick.ageAtPurchase);
+            const sellPrice = prompt('بكم بعته؟ (السعر المتوقع: ' + currentPrice.toFixed(1) + ' ر.س)', currentPrice.toFixed(1));
+            
+            if (sellPrice !== null && sellPrice.trim() !== '') {
+                const price = parseFloat(sellPrice);
+                if (isNaN(price) || price < 0) {
+                    showToast('❌ يرجى إدخال سعر صحيح');
+                    return;
+                }
+                
+                chick.isDeleted = true;
+                chick.soldDate = new Date().toISOString();
+                chick.soldPrice = price;
+                chick.actualProfit = price - chick.purchasePrice;
+                
+                saveData();
+                renderAll();
+                showToast('💰 تم تسجيل بيع ' + chick.name + ' بسعر ' + price.toFixed(1) + ' ر.س');
+            }
+        }
+
+        function openFeedModal(chickId) {
+            const chick = chicks.find(c => c.id === chickId);
+            if (chick) {
+                document.getElementById('feedChickId').value = chickId;
+                openModal('feedModal');
+            }
+        }
+
+        function recordFeeding(event) {
+            event.preventDefault();
+            
+            const chickId = document.getElementById('feedChickId').value;
+            const feedType = document.getElementById('feedType').value.trim();
+            const quantity = parseFloat(document.getElementById('feedQuantity').value);
+            const cost = parseFloat(document.getElementById('feedCost').value);
+            
+            const chick = chicks.find(c => c.id === chickId);
+            if (chick) {
+                chick.lastFed = new Date().toISOString();
+                
+                feedRecords.push({
+                    id: 'feed_' + Date.now(),
+                    chickId: chickId,
+                    date: new Date().toISOString(),
+                    feedType: feedType,
+                    quantity: quantity,
+                    cost: cost
+                });
+                
+                saveData();
+                renderAll();
+                closeModal('feedModal');
+                showToast('✅ تم تسجيل إطعام ' + chick.name);
+                
+                document.getElementById('feedType').value = '';
+                document.getElementById('feedQuantity').value = '';
+                document.getElementById('feedCost').value = '';
+            }
+        }
+
+        function renderAll() {
+            renderStats();
+            renderChicks();
+        }
+
+        function renderStats() {
+            const activeChicks = chicks.filter(c => !c.isDeleted);
+            const deadChicks = chicks.filter(c => c.isDeleted);
+            
+            let chickCount = 0, broilerCount = 0, chickenCount = 0;
+            let totalValue = 0, totalPurchase = 0;
+            
+            activeChicks.forEach(chick => {
+                const age = calculateAge(chick.purchaseDate, chick.ageAtPurchase);
+                const stage = getStage(age);
+                const currentPrice = calculateCurrentPrice(chick.purchasePrice, chick.purchaseDate, chick.ageAtPurchase);
+                
+                if (stage.type === 'chicks') chickCount++;
+                else if (stage.type === 'broilers') broilerCount++;
+                else chickenCount++;
+                
+                totalValue += currentPrice;
+                totalPurchase += chick.purchasePrice;
+            });
+            
+            const feedCost = feedRecords.reduce((sum, f) => sum + f.cost, 0);
+            const netProfit = totalValue - totalPurchase - feedCost;
+            
+            // تحديد الأغلبية وتغيير الاسم والأيقونة تلقائياً
+            const totalActive = activeChicks.length;
+            let mainIcon = '🐣';
+            let mainLabel = 'صيصان';
+            
+            if (chickenCount > broilerCount && chickenCount > chickCount) {
+                mainIcon = '🐓';
+                mainLabel = 'دجاج';
+            } else if (broilerCount > chickCount && broilerCount > chickenCount) {
+                mainIcon = '🐔';
+                mainLabel = 'فراريج';
+            } else if (chickCount > 0) {
+                mainIcon = '🐥';
+                mainLabel = 'صيصان';
+            }
+            
+            // إذا كان العدد صفر
+            if (totalActive === 0) {
+                mainIcon = '🐣';
+                mainLabel = 'لا يوجد';
+            }
+            
+            document.getElementById('mainIcon').textContent = mainIcon;
+            document.getElementById('totalCount').textContent = totalActive;
+            document.getElementById('mainLabel').textContent = mainLabel;
+            
+            document.getElementById('statTotal').textContent = totalValue.toFixed(1);
+            document.getElementById('statProfit').textContent = 'ربح: ' + netProfit.toFixed(1) + ' ر.س';
+            document.getElementById('statDead').textContent = deadChicks.length;
+        }
+
+        function renderChicks() {
+            const container = document.getElementById('chicksList');
+            const emptyState = document.getElementById('emptyState');
+            
+            let displayChicks = chicks.filter(c => !c.isDeleted);
+            
+            if (currentFilter !== 'all') {
+                displayChicks = displayChicks.filter(chick => {
+                    const age = calculateAge(chick.purchaseDate, chick.ageAtPurchase);
+                    const stage = getStage(age);
+                    return stage.type === currentFilter;
+                });
+            }
+            
+            if (displayChicks.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            container.style.display = 'flex';
+            emptyState.style.display = 'none';
+            
+            container.innerHTML = displayChicks.map(chick => {
+                const age = calculateAge(chick.purchaseDate, chick.ageAtPurchase);
+                const stage = getStage(age);
+                const currentPrice = calculateCurrentPrice(chick.purchasePrice, chick.purchaseDate, chick.ageAtPurchase);
+                const profit = currentPrice - chick.purchasePrice;
+                
+                let lastFedText = 'لم يتم الإطعام بعد';
+                if (chick.lastFed) {
+                    const fedDate = new Date(chick.lastFed);
+                    lastFedText = 'آخر إطعام: ' + fedDate.toLocaleString('ar-SA', { 
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                }
+                
+                return `
+                    <div class="chick-card">
+                        <div class="chick-header">
+                            <div class="chick-name">${stage.icon} ${chick.name}</div>
+                            <div class="chick-age">${formatAge(age)}</div>
+                            <span class="chick-stage">${stage.name}</span>
+                        </div>
+                        
+                        <div class="chick-details">
+                            <div class="detail-item">
+                                <div class="detail-label">سعر الشراء</div>
+                                <div class="detail-value">${chick.purchasePrice.toFixed(1)} ر.س</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">السعر الحالي</div>
+                                <div class="detail-value price">${currentPrice.toFixed(1)} ر.س</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">الربح المتوقع</div>
+                                <div class="detail-value price">+${profit.toFixed(1)} ر.س</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">آخر إطعام</div>
+                                <div class="detail-value" style="font-size: 0.75rem;">${lastFedText}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="chick-actions">
+                            <button class="action-btn feed-btn" onclick="openFeedModal('${chick.id}')">
+                                🍽️ إطعام
+                            </button>
+                        </div>
+                        <div class="chick-actions" style="margin-top: 0.5rem;">
+                            <button class="action-btn sell-btn" onclick="sellChick('${chick.id}')">
+                                💰 بيع
+                            </button>
+                            <button class="action-btn death-btn" onclick="markAsDead('${chick.id}')">
+                                ☠️ موت
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterChicks(filter) {
+            currentFilter = filter;
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            renderChicks();
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function openAddModal() {
+            openModal('addModal');
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('purchaseDate').value = today;
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // إضافة نوع علف جديد
+        function addFeedType(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('feedTypeName').value.trim();
+            const price = parseFloat(document.getElementById('feedTypePrice').value);
+            const weight = parseFloat(document.getElementById('feedTypeWeight').value) || 0;
+            
+            if (!name || !price) {
+                showToast('❌ يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+            
+            feedTypes.push({
+                id: 'feedtype_' + Date.now(),
+                name: name,
+                price: price,
+                weight: weight,
+                createdAt: new Date().toISOString()
+            });
+            
+            saveData();
+            closeModal('addFeedTypeModal');
+            showToast('✅ تم إضافة نوع العلف: ' + name);
+            
+            document.getElementById('feedTypeName').value = '';
+            document.getElementById('feedTypePrice').value = '';
+            document.getElementById('feedTypeWeight').value = '';
+        }
+
+        // فتح نافذة إضافة علف
+        function openAddFeedModal() {
+            openModal('addFeedTypeModal');
+        }
+
+        // عرض أنواع العلف
+        function viewFeeds() {
+            const container = document.getElementById('feedTypesList');
+            
+            if (feedTypes.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🌾</div>
+                        <div>لا توجد أنواع علف مسجلة</div>
+                        <div style="font-size: 0.85rem; margin-top: 0.5rem;">اضغط "إضافة علف" لإضافة نوع جديد</div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = feedTypes.map(feed => `
+                    <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; margin-bottom: 0.8rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="flex: 1;">
+                                <div style="font-size: 1.2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.3rem;">
+                                    🌾 ${feed.name}
+                                </div>
+                                <div style="color: var(--text-secondary); font-size: 0.9rem;">
+                                    السعر: <span style="color: var(--primary); font-weight: 700;">${feed.price.toFixed(1)} ر.س</span>
+                                    ${feed.weight > 0 ? ` • الوزن: ${feed.weight} كجم` : ''}
+                                </div>
+                            </div>
+                            <button onclick="deleteFeedType('${feed.id}')" style="background: var(--danger); color: white; border: none; padding: 0.6rem 1rem; border-radius: 8px; cursor: pointer; font-family: 'Cairo', sans-serif; font-weight: 600;">
+                                🗑️ حذف
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            openModal('viewFeedsModal');
+        }
+
+        // حذف نوع علف
+        function deleteFeedType(feedId) {
+            if (confirm('هل أنت متأكد من حذف هذا النوع من العلف؟')) {
+                const feed = feedTypes.find(f => f.id === feedId);
+                feedTypes = feedTypes.filter(f => f.id !== feedId);
+                saveData();
+                viewFeeds();
+                showToast('🗑️ تم حذف ' + (feed ? feed.name : 'العلف'));
+            }
+        }
+
+        function exportData() {
+            const data = {
+                chicks: chicks,
+                feedRecords: feedRecords,
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'saysani_backup_' + new Date().toISOString().split('T')[0] + '.json';
+            a.click();
+            
+            showToast('✅ تم تصدير البيانات بنجاح');
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        if (confirm('هل تريد استبدال البيانات الحالية؟')) {
+                            chicks = data.chicks || [];
+                            feedRecords = data.feedRecords || [];
+                            saveData();
+                            renderAll();
+                            showToast('✅ تم استيراد البيانات بنجاح');
+                        }
+                    } catch (error) {
+                        showToast('❌ خطأ في قراءة الملف');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ هل أنت متأكد من حذف جميع البيانات؟')) {
+                if (confirm('تأكيد نهائي: سيتم حذف كل شيء!')) {
+                    localStorage.clear();
+                    chicks = [];
+                    feedRecords = [];
+                    renderAll();
+                    showToast('🗑️ تم حذف جميع البيانات');
+                }
+            }
+        }
+
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

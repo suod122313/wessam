@@ -936,6 +936,15 @@
                                         class="text-xs text-yellow-400 font-bold hover:text-yellow-300">نسخ</button>
                                 </div>
                             </div>
+
+                            <!-- حقل اسم المحول منه الجديد -->
+                            <div class="mb-3">
+                                <label class="block text-sm text-gray-400 mb-1">اسم صاحب الحساب المحول منه <span
+                                        class="text-red-400">*</span></label>
+                                <input type="text" id="senderName" class="form-input"
+                                    placeholder="الاسم كما هو مسجل في حسابك البنكي" required>
+                            </div>
+
                             <div class="flex items-center gap-2 mb-3 bg-red-900/20 p-2 rounded-lg">
                                 <input type="checkbox" id="confirmTransfer" class="accent-red-500 w-5 h-5">
                                 <label for="confirmTransfer" class="text-red-400 font-bold text-xs cursor-pointer">هل
@@ -1065,50 +1074,16 @@
 
         document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => { radio.addEventListener('change', (e) => { const section = document.getElementById('bankTransferSection'); if (e.target.value === 'transfer') { section.classList.remove('hidden'); } else { section.classList.add('hidden'); } }); });
 
-        function openCheckout() { promoApplied = false; document.getElementById('promoInput').value = ''; document.getElementById('promoInput').disabled = false; document.getElementById('promoMsg').classList.add('hidden'); document.getElementById('bankTransferSection').classList.add('hidden'); document.getElementById('confirmTransfer').checked = false; document.getElementById('receiptFile').value = ''; document.querySelector('input[name="paymentMethod"][value="cash"]').checked = true; const sub = cart.reduce((s, i) => s + (parseFloat(String(i.price).replace(/[^0-9.]/g, '') || 0) * i.qty), 0); document.getElementById('modalSubtotal').textContent = sub.toFixed(2) + ' ريال'; document.getElementById('modalDeliveryFee').textContent = deliveryFee + ' ريال'; document.getElementById('modalDeliveryFee').className = 'text-white font-bold'; document.getElementById('modalTotal').textContent = (sub + deliveryFee).toFixed(2) + ' ريال'; document.getElementById('checkoutName').value = currentUser.displayName || ''; clearAllErrors(); userLocation = null; const hint = document.getElementById('locationHint'); hint.style.display = 'flex'; hint.classList.remove('error-hint'); hint.querySelector('span').textContent = 'يجب تحديد الموقع على الخريطة بدقة'; document.getElementById('checkoutModal').classList.add('open'); setTimeout(() => { if (!map) initMap(); else map.invalidateSize(); }, 100); }
+        function openCheckout() {
+            promoApplied = false; document.getElementById('promoInput').value = ''; document.getElementById('promoInput').disabled = false; document.getElementById('promoMsg').classList.add('hidden'); document.getElementById('bankTransferSection').classList.add('hidden'); document.getElementById('confirmTransfer').checked = false; document.getElementById('receiptFile').value = ''; document.getElementById('senderName').value = ''; // تفريغ حقل اسم المحول منه
+            document.querySelector('input[name="paymentMethod"][value="cash"]').checked = true; const sub = cart.reduce((s, i) => s + (parseFloat(String(i.price).replace(/[^0-9.]/g, '') || 0) * i.qty), 0); document.getElementById('modalSubtotal').textContent = sub.toFixed(2) + ' ريال'; document.getElementById('modalDeliveryFee').textContent = deliveryFee + ' ريال'; document.getElementById('modalDeliveryFee').className = 'text-white font-bold'; document.getElementById('modalTotal').textContent = (sub + deliveryFee).toFixed(2) + ' ريال'; document.getElementById('checkoutName').value = currentUser.displayName || ''; clearAllErrors(); userLocation = null; const hint = document.getElementById('locationHint'); hint.style.display = 'flex'; hint.classList.remove('error-hint'); hint.querySelector('span').textContent = 'يجب تحديد الموقع على الخريطة بدقة'; document.getElementById('checkoutModal').classList.add('open'); setTimeout(() => { if (!map) initMap(); else map.invalidateSize(); }, 100);
+        }
         window.closeCheckout = () => document.getElementById('checkoutModal').classList.remove('open');
 
         window.applyPromo = async () => { const code = document.getElementById('promoInput').value.trim(); if (!code) return; try { const promoDoc = await getDoc(doc(db, 'settings', 'promoCode')); if (promoDoc.exists() && promoDoc.data().code === code && !promoDoc.data().used) { promoApplied = true; document.getElementById('modalDeliveryFee').textContent = 'مجاني (خصم)'; document.getElementById('modalDeliveryFee').className = 'text-green-400 font-bold'; const sub = cart.reduce((s, i) => s + (parseFloat(String(i.price).replace(/[^0-9.]/g, '') || 0) * i.qty), 0); document.getElementById('modalTotal').textContent = sub.toFixed(2) + ' ريال'; document.getElementById('promoMsg').textContent = 'تم تفعيل الكود بنجاح!'; document.getElementById('promoMsg').className = 'text-xs mt-1 text-green-400'; document.getElementById('promoMsg').classList.remove('hidden'); document.getElementById('promoInput').disabled = true; } else { document.getElementById('promoMsg').textContent = 'الكود غير صالح أو مستخدم مسبقاً'; document.getElementById('promoMsg').className = 'text-xs mt-1 text-red-400'; document.getElementById('promoMsg').classList.remove('hidden'); } } catch (e) { showToast('خطأ في التحقق من الكود', true); } };
 
-        // ========== تحديث الخريطة لتكون أحدث وأدق ==========
-        function initMap() {
-            map = L.map('map').setView([MIQOU_LAT, MIQOU_LNG], 6);
-            // استخدام خرائط جوجل الفضائية المحدثة مع أسماء الشوارع لسهولة التحديد
-            L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
-                maxZoom: 21,
-                attribution: 'Google Maps'
-            }).addTo(map);
-            marker = L.marker([MIQOU_LAT, MIQOU_LNG], { draggable: true }).addTo(map);
-            marker.on('dragend', () => {
-                userLocation = marker.getLatLng();
-                const hint = document.getElementById('locationHint');
-                hint.style.display = 'none';
-                hint.classList.remove('error-hint');
-            });
-        }
-
-        window.getCurrentLocation = () => {
-            if (!navigator.geolocation) {
-                showToast('المتصفح لا يدعم تحديد الموقع', true);
-                return;
-            }
-            showToast('جاري تحديد موقعك بدقة...');
-            // تفعيل الدقة العالية باستخدام شريحة الـ GPS وتكبير الخريطة أكثر
-            navigator.geolocation.getCurrentPosition(pos => {
-                userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-                map.setView([userLocation.lat, userLocation.lng], 18); // تكبير للمنزل بدقة
-                marker.setLatLng(userLocation);
-                const hint = document.getElementById('locationHint');
-                hint.style.display = 'none';
-                hint.classList.remove('error-hint');
-                showToast('تم تحديد الموقع بدقة عالية');
-            }, () => showToast('فشل تحديد الموقع، فعّل صلاحيات الموقع', true), {
-                enableHighAccuracy: true, // إجبار استخدام GPS للدقة العالية
-                timeout: 10000,
-                maximumAge: 0
-            });
-        };
-        // ==================================================
+        function initMap() { map = L.map('map').setView([MIQOU_LAT, MIQOU_LNG], 6); L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', { maxZoom: 21, attribution: 'Google Maps' }).addTo(map); marker = L.marker([MIQOU_LAT, MIQOU_LNG], { draggable: true }).addTo(map); marker.on('dragend', () => { userLocation = marker.getLatLng(); const hint = document.getElementById('locationHint'); hint.style.display = 'none'; hint.classList.remove('error-hint'); }); }
+        window.getCurrentLocation = () => { if (!navigator.geolocation) { showToast('المتصفح لا يدعم تحديد الموقع', true); return; } showToast('جاري تحديد موقعك بدقة...'); navigator.geolocation.getCurrentPosition(pos => { userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude }; map.setView([userLocation.lat, userLocation.lng], 18); marker.setLatLng(userLocation); const hint = document.getElementById('locationHint'); hint.style.display = 'none'; hint.classList.remove('error-hint'); showToast('تم تحديد الموقع بدقة عالية'); }, () => showToast('فشل تحديد الموقع، فعّل صلاحيات الموقع', true), { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }); };
 
         function clearAllErrors() { document.querySelectorAll('.field-error').forEach(el => el.classList.remove('show')); document.querySelectorAll('.form-input').forEach(el => el.classList.remove('input-error')); }
         function showFieldError(inputId, errorId) { document.getElementById(inputId).classList.add('input-error'); document.getElementById(errorId).classList.add('show'); }
@@ -1132,10 +1107,18 @@
             const fd = new FormData(document.getElementById('orderForm'));
             const paymentMethod = fd.get('paymentMethod');
             let receiptBase64 = null;
+            let senderNameVal = null; // متغير لحفظ اسم المحول منه
 
             if (paymentMethod === 'transfer') {
                 const confirmTransfer = document.getElementById('confirmTransfer').checked;
                 const fileInput = document.getElementById('receiptFile');
+                senderNameVal = document.getElementById('senderName').value.trim(); // جلب القيمة
+
+                // التحقق من كتابة اسم صاحب الحساب المحول منه
+                if (!senderNameVal) {
+                    showToast('يجب إدخال اسم صاحب الحساب المحول منه', true);
+                    return;
+                }
 
                 if (!confirmTransfer) {
                     showToast('يجب التأكيد على أنك قمت بالتحويل', true);
@@ -1180,7 +1163,8 @@
                     addressText: fd.get('locationText').trim(),
                     location: { lat: userLocation.lat, lng: userLocation.lng },
                     items: cart.map(i => ({ name: i.name, price: i.price, qty: i.qty, selectedOption: i.selectedOption || null })),
-                    subtotal: sub, deliveryFee: promoApplied ? 0 : deliveryFee, promoApplied: promoApplied, deliveryPaid: false, total: sub + (promoApplied ? 0 : deliveryFee), paymentMethod: paymentMethod, receiptBase64: receiptBase64, status: 'pending', date: new Date(), userId: currentUser.uid, userEmail: currentUser.email
+                    subtotal: sub, deliveryFee: promoApplied ? 0 : deliveryFee, promoApplied: promoApplied, deliveryPaid: false, total: sub + (promoApplied ? 0 : deliveryFee), paymentMethod: paymentMethod, receiptBase64: receiptBase64, senderName: senderNameVal, // حفظ اسم المحول منه في قاعدة البيانات
+                    status: 'pending', date: new Date(), userId: currentUser.uid, userEmail: currentUser.email
                 };
                 await addDoc(collection(db, 'orders'), orderData);
                 closeCheckout(); toggleCart(); document.getElementById('successModal').classList.add('open'); cart = []; updateCart(); document.getElementById('orderForm').reset(); userLocation = null; showToast('تم إرسال الطلب بنجاح');
